@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Меридиан — туристическое агентство</title>
+<meta name="description" content="Меридиан: подбор туров, горящие предложения, отели, отзывы и бонусная программа для туристов." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="site-header" id="top">
+  <div class="wrap header-row">
+    <a class="logo" href="#top">
+      <span class="logo-mark">M</span>
+      <span class="logo-text">Меридиан<em>travel</em></span>
+    </a>
+    <nav class="main-nav" id="mainNav">
+      <a href="#destinations">Направления</a>
+      <a href="#hot">Горящие туры</a>
+      <a href="#hotels">Отели</a>
+      <a href="#discounts">Скидки</a>
+      <a href="#reviews">Отзывы</a>
+      <a href="#season">Сезонность</a>
+      <a href="#bonus">Бонусы</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+    <div class="header-actions">
+      <a class="phone-link" href="tel:+79990001122">+7 999 000-11-22</a>
+      <a class="btn btn-ghost" href="/cabinet.html">Личный кабинет</a>
+      <button class="btn btn-primary" id="openRequestBtn">Оставить заявку</button>
+    </div>
+    <button class="burger" id="burgerBtn" aria-label="Меню">☰</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-mesh" aria-hidden="true"></div>
+    <div class="wrap hero-inner">
+      <p class="eyebrow">Тревел-агентство полного цикла · с 2011 года</p>
+      <h1>Найдите тур,<br/><span class="italic">который запомнится</span></h1>
+      <p class="hero-sub">Подбираем направления под ваш бюджет и даты, следим за горящими предложениями и начисляем бонусы за каждую поездку.</p>
+
+      <form class="quickfinder" id="quickFinderForm">
+        <div class="qf-field">
+          <label for="qfCountry">Куда</label>
+          <select id="qfCountry" name="countryId">
+            <option value="">Любая страна</option>
+          </select>
+        </div>
+        <div class="qf-field">
+          <label for="qfBudget">Бюджет, $</label>
+          <input id="qfBudget" name="budget" type="text" placeholder="до 1500" />
+        </div>
+        <div class="qf-field">
+          <label for="qfDate">Дата вылета</label>
+          <input id="qfDate" name="dateFrom" type="date" />
+        </div>
+        <button type="submit" class="btn btn-primary qf-submit">Подобрать тур</button>
+      </form>
+
+      <div class="hero-stats">
+        <div><strong>14&nbsp;лет</strong><span>на рынке туризма</span></div>
+        <div><strong>32&nbsp;направления</strong><span>во всех сезонах</span></div>
+        <div><strong>9&nbsp;800+</strong><span>довольных туристов</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESTINATIONS -->
+  <section id="destinations" class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Страны и направления</p>
+        <h2>Выбирайте побережье под настроение</h2>
+      </div>
+      <div class="grid destinations-grid" id="destinationsGrid"></div>
+    </div>
+  </section>
+
+  <!-- HOT TOURS -->
+  <section id="hot" class="section section-dark">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Ограниченное предложение</p>
+        <h2>Горящие туры</h2>
+        <p class="section-lead">Места раскупают за считанные дни — цена держится, пока не закончится квота мест.</p>
+      </div>
+      <div class="grid hot-grid" id="hotGrid"></div>
+    </div>
+  </section>
+
+  <!-- DISCOUNTS -->
+  <section id="discounts" class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Постоянные предложения</p>
+        <h2>Скидки</h2>
+      </div>
+      <div class="grid discounts-grid" id="discountsGrid"></div>
+    </div>
+  </section>
+
+  <!-- HOTELS -->
+  <section id="hotels" class="section section-tint">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Проверенное размещение</p>
+        <h2>Отели</h2>
+        <p class="section-lead">Рейтинги подтягиваются с внешних площадок — сравнивайте с оценками наших туристов.</p>
+      </div>
+      <div class="filter-row" id="hotelFilters"></div>
+      <div class="grid hotels-grid" id="hotelsGrid"></div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews" class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Отзывы туристов</p>
+        <h2>Что говорят те, кто уже вернулся</h2>
+      </div>
+      <div class="grid reviews-grid" id="reviewsGrid"></div>
+      <button class="btn btn-outline" id="openReviewBtn">Оставить свой отзыв</button>
+    </div>
+  </section>
+
+  <!-- SEASONALITY -->
+  <section id="season" class="section section-tint">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Когда лучше лететь</p>
+        <h2>Сезонность и погода сейчас</h2>
+        <p class="section-lead">Актуальная погода в курортных городах — данные обновляются в реальном времени.</p>
+      </div>
+      <div class="grid season-grid" id="seasonGrid"></div>
+    </div>
+  </section>
+
+  <!-- BONUS -->
+  <section id="bonus" class="section section-dark">
+    <div class="wrap bonus-wrap">
+      <div class="bonus-copy reveal">
+        <p class="eyebrow">Программа лояльности</p>
+        <h2>Бонусы, которые работают на следующую поездку</h2>
+        <p class="section-lead">С каждого оплаченного тура возвращаем 5% в баллах. Баллами можно оплатить до 30% стоимости следующего тура.</p>
+        <ul class="bonus-list">
+          <li><span>01</span>Бронируете тур через Меридиан</li>
+          <li><span>02</span>После поездки баллы зачисляются в личный кабинет</li>
+          <li><span>03</span>Списываете баллы при следующем бронировании</li>
+        </ul>
+        <a class="btn btn-primary" href="/cabinet.html">Войти в личный кабинет</a>
+      </div>
+      <div class="bonus-card reveal">
+        <p class="bonus-card-label">Ваш баланс</p>
+        <p class="bonus-card-value">0 <span>баллов</span></p>
+        <p class="bonus-card-hint">Зарегистрируйтесь, чтобы начать копить</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARTNERS -->
+  <section id="partners" class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Нам доверяют</p>
+        <h2>Партнёры</h2>
+      </div>
+      <div class="partners-row" id="partnersRow"></div>
+    </div>
+  </section>
+
+  <!-- CONTACTS -->
+  <section id="contacts" class="section section-tint">
+    <div class="wrap contacts-wrap">
+      <div class="reveal">
+        <p class="eyebrow">На связи каждый день</p>
+        <h2>Контакты</h2>
+        <p class="section-lead">Отвечаем в мессенджерах в течение 15 минут в рабочее время.</p>
+        <ul class="contact-list">
+          <li><span>Телефон</span><a href="tel:+79990001122">+7 999 000-11-22</a></li>
+          <li><span>WhatsApp</span><a href="https://wa.me/79990001122" target="_blank" rel="noopener">+7 999 000-11-22</a></li>
+          <li><span>Telegram</span><a href="https://t.me/meridiantravel" target="_blank" rel="noopener">@meridiantravel</a></li>
+          <li><span>Instagram</span><a href="https://instagram.com/meridian.travel" target="_blank" rel="noopener">@meridian.travel</a></li>
+          <li><span>Email</span><a href="mailto:hello@meridian-travel.example">hello@meridian-travel.example</a></li>
+          <li><span>Офис</span><span>Москва, Тверская ул., 12, офис 4</span></li>
+          <li><span>Часы работы</span><span>Пн–Вс, 09:00–21:00</span></li>
+        </ul>
+      </div>
+      <form class="contact-form" id="contactRequestForm">
+        <h3>Оставить заявку</h3>
+        <div class="form-row">
+          <input name="name" placeholder="Ваше имя" required />
+          <input name="phone" placeholder="Телефон" required />
+        </div>
+        <input name="email" type="email" placeholder="Email (необязательно)" />
+        <div class="form-row">
+          <select name="countryId" id="cfCountry">
+            <option value="">Направление не выбрано</option>
+          </select>
+          <input name="budget" placeholder="Бюджет, $" />
+        </div>
+        <div class="form-row">
+          <input name="dateFrom" type="date" />
+          <input name="dateTo" type="date" />
+        </div>
+        <div class="form-row">
+          <input name="adults" type="number" min="1" value="2" placeholder="Взрослые" />
+          <input name="kids" type="number" min="0" value="0" placeholder="Дети" />
+        </div>
+        <textarea name="comment" rows="3" placeholder="Пожелания к туру"></textarea>
+        <button type="submit" class="btn btn-primary">Отправить заявку</button>
+        <p class="form-note" id="contactFormNote"></p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-row">
+    <div>
+      <a class="logo" href="#top">
+        <span class="logo-mark">M</span>
+        <span class="logo-text">Меридиан<em>travel</em></span>
+      </a>
+      <p>Туристическое агентство полного цикла: подбор, бронирование и сопровождение туров.</p>
+    </div>
+    <div>
+      <p class="footer-title">Разделы</p>
+      <a href="#destinations">Направления</a>
+      <a href="#hot">Горящие туры</a>
+      <a href="#hotels">Отели</a>
+      <a href="#reviews">Отзывы</a>
+    </div>
+    <div>
+      <p class="footer-title">Контакты</p>
+      <a href="tel:+79990001122">+7 999 000-11-22</a>
+      <a href="mailto:hello@meridian-travel.example">hello@meridian-travel.example</a>
+      <a href="https://wa.me/79990001122" target="_blank" rel="noopener">WhatsApp</a>
+      <a href="https://instagram.com/meridian.travel" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+  <p class="copyright">© 2026 Меридиан. Все права защищены.</p>
+</footer>
+
+<!-- REQUEST MODAL -->
+<div class="modal-overlay" id="requestModal">
+  <div class="modal">
+    <button class="modal-close" id="closeRequestModal" aria-label="Закрыть">×</button>
+    <h3>Оставить заявку на тур</h3>
+    <p class="modal-sub">Расскажите о своих предпочтениях — подберём варианты и свяжемся с вами.</p>
+    <form id="modalRequestForm">
+      <div class="form-row">
+        <input name="name" placeholder="Ваше имя" required />
+        <input name="phone" placeholder="Телефон" required />
+      </div>
+      <input name="email" type="email" placeholder="Email (необязательно)" />
+      <div class="form-row">
+        <select name="countryId" id="modalCountry">
+          <option value="">Направление не выбрано</option>
+        </select>
+        <input name="budget" placeholder="Бюджет, $" />
+      </div>
+      <div class="form-row">
+        <input name="dateFrom" type="date" />
+        <input name="dateTo" type="date" />
+      </div>
+      <div class="form-row">
+        <input name="adults" type="number" min="1" value="2" placeholder="Взрослые" />
+        <input name="kids" type="number" min="0" value="0" placeholder="Дети" />
+      </div>
+      <textarea name="comment" rows="3" placeholder="Пожелания к туру"></textarea>
+      <button type="submit" class="btn btn-primary">Отправить заявку</button>
+      <p class="form-note" id="modalFormNote"></p>
+    </form>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal">
+    <button class="modal-close" id="closeReviewModal" aria-label="Закрыть">×</button>
+    <h3>Оставить отзыв</h3>
+    <p class="modal-sub">Отзыв появится на сайте после проверки модератором.</p>
+    <form id="reviewForm">
+      <input name="name" placeholder="Ваше имя" required />
+      <select name="countryId" id="reviewCountry">
+        <option value="">Страна поездки</option>
+      </select>
+      <div class="star-picker" id="starPicker">
+        <button type="button" data-star="1">★</button>
+        <button type="button" data-star="2">★</button>
+        <button type="button" data-star="3">★</button>
+        <button type="button" data-star="4">★</button>
+        <button type="button" data-star="5">★</button>
+      </div>
+      <input type="hidden" name="rating" id="reviewRating" value="5" />
+      <textarea name="text" rows="4" placeholder="Расскажите о поездке" required></textarea>
+      <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+      <p class="form-note" id="reviewFormNote"></p>
+    </form>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
