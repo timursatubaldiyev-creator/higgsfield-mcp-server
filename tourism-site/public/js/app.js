@@ -439,9 +439,11 @@ function initHeroCarousel(tours) {
     .map(
       (t) => `
     <div class="hc-slide" style="background:${t.gradient}">
-      <span class="hc-badge">${t.country}</span>
-      <h4>${t.title}</h4>
-      <p>${t.nights} ночей · от $${t.price}</p>
+      <div class="hc-caption">
+        <span class="hc-badge">${t.country}</span>
+        <h4>${t.title}</h4>
+        <p>${t.nights} ночей · от $${t.price}</p>
+      </div>
     </div>`
     )
     .join("");

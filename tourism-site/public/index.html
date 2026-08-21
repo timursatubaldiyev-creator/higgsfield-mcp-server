@@ -43,8 +43,15 @@
 
   <!-- HERO -->
   <section class="hero">
+    <div class="hero-carousel-bg" id="heroCarousel">
+      <div class="hc-track" id="hcTrack"></div>
+    </div>
+    <div class="hero-scrim" aria-hidden="true"></div>
     <div class="hero-mesh" id="heroMesh" aria-hidden="true"></div>
     <div class="hero-particles" id="heroParticles" aria-hidden="true"></div>
+    <button class="hc-arrow hc-prev" id="hcPrev" aria-label="Предыдущий тур" type="button">‹</button>
+    <button class="hc-arrow hc-next" id="hcNext" aria-label="Следующий тур" type="button">›</button>
+    <div class="hc-dots" id="hcDots"></div>
     <div class="wrap hero-inner">
       <div class="hero-copy">
         <p class="eyebrow">Тревел-агентство полного цикла · с 2011 года</p>
@@ -74,13 +81,6 @@
           <div class="tip"><strong class="counter" data-target="32" data-suffix=" направления">0</strong><span>во всех сезонах</span><span class="tip-bubble">От пляжей Турции до гор Грузии — новые страны добавляются каждый сезон</span></div>
           <div class="tip"><strong class="counter" data-target="9800" data-suffix="+">0</strong><span>довольных туристов</span><span class="tip-bubble">Столько туристов оформили тур через «Меридиан» с 2011 года</span></div>
         </div>
-      </div>
-
-      <div class="hero-carousel" id="heroCarousel">
-        <div class="hc-track" id="hcTrack"></div>
-        <button class="hc-arrow hc-prev" id="hcPrev" aria-label="Предыдущий тур" type="button">‹</button>
-        <button class="hc-arrow hc-next" id="hcNext" aria-label="Следующий тур" type="button">›</button>
-        <div class="hc-dots" id="hcDots"></div>
       </div>
     </div>
   </section>
