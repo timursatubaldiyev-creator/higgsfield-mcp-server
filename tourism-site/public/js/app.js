@@ -515,6 +515,130 @@ function wireTooltips() {
   document.addEventListener("click", () => document.querySelectorAll(".tip.tip-open").forEach((t) => t.classList.remove("tip-open")));
 }
 
+// ---------- white glow cursor (desktop mice only) ----------
+function initCursorGlow() {
+  if (REDUCE_MOTION) return;
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  const glow = document.createElement("div");
+  glow.id = "cursorGlow";
+  document.body.appendChild(glow);
+  let x = window.innerWidth / 2;
+  let y = window.innerHeight / 2;
+  window.addEventListener(
+    "mousemove",
+    (e) => {
+      x = e.clientX;
+      y = e.clientY;
+      glow.classList.add("active");
+    },
+    { passive: true }
+  );
+  document.addEventListener("mouseleave", () => glow.classList.remove("active"));
+  (function loop() {
+    glow.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+    requestAnimationFrame(loop);
+  })();
+}
+
+// ---------- promo popup: auto-opens once per session, 7-10s after load ----------
+function initPromoPopup() {
+  if (sessionStorage.getItem("meridian_promo_shown")) return;
+  const delay = 7000 + Math.random() * 3000;
+  setTimeout(() => {
+    if (document.querySelector(".modal-overlay.open")) return; // don't interrupt another open modal
+    openModal("promoModal");
+    sessionStorage.setItem("meridian_promo_shown", "1");
+  }, delay);
+
+  document.getElementById("closePromoModal").addEventListener("click", () => closeModal("promoModal"));
+  document.getElementById("promoModal").addEventListener("click", (e) => {
+    if (e.target.id === "promoModal") closeModal("promoModal");
+  });
+  document.getElementById("promoCta").addEventListener("click", () => {
+    closeModal("promoModal");
+    hideBonusWidget();
+    openModal("requestModal");
+  });
+}
+
+// ---------- 3D globe: auto-rotates, drag to spin (mouse + touch) ----------
+const GLOBE_PINS = [
+  { countryId: "turkey", rx: 8, ry: 15, color: "#b9975f" },
+  { countryId: "egypt", rx: -6, ry: 65, color: "#a8a179" },
+  { countryId: "uae", rx: 14, ry: 105, color: "#cbb37c" },
+  { countryId: "thailand", rx: -12, ry: 205, color: "#9fae8f" },
+  { countryId: "maldives", rx: -22, ry: 245, color: "#8fabb0" },
+  { countryId: "georgia", rx: 28, ry: 325, color: "#b08a85" },
+];
+
+function renderGlobePins() {
+  const pins = document.getElementById("globePins");
+  const legend = document.getElementById("globeLegend");
+  if (!pins || !legend) return;
+  const radius = 150;
+  pins.innerHTML = GLOBE_PINS.map((p) => {
+    const name = countryName(p.countryId);
+    return `<span class="globe-pin" title="${name}" style="color:${p.color}; transform:rotateY(${p.ry}deg) rotateX(${p.rx}deg) translateZ(${radius}px);"></span>`;
+  }).join("");
+  legend.innerHTML = GLOBE_PINS.map(
+    (p) => `<span class="globe-legend-item"><span class="globe-legend-dot" style="color:${p.color}; background:${p.color};"></span>${countryName(p.countryId)}</span>`
+  ).join("");
+}
+
+function initGlobe() {
+  const wrap = document.getElementById("globeWrap");
+  const globe = document.getElementById("globe");
+  if (!wrap || !globe) return;
+  renderGlobePins();
+
+  let rotY = 0;
+  let rotX = -10;
+  let dragging = false;
+  let startX = 0;
+  let startY = 0;
+  let startRotY = 0;
+  let startRotX = 0;
+  const autoplay = !REDUCE_MOTION;
+
+  function apply() {
+    globe.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+  }
+  apply();
+
+  function tick() {
+    if (autoplay && !dragging) {
+      rotY += 0.05;
+      apply();
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  function down(x, y) {
+    dragging = true;
+    startX = x;
+    startY = y;
+    startRotY = rotY;
+    startRotX = rotX;
+  }
+  function move(x, y) {
+    if (!dragging) return;
+    rotY = startRotY + (x - startX) * 0.4;
+    rotX = Math.max(-70, Math.min(70, startRotX - (y - startY) * 0.4));
+    apply();
+  }
+  function up() {
+    dragging = false;
+  }
+
+  wrap.addEventListener("mousedown", (e) => down(e.clientX, e.clientY));
+  window.addEventListener("mousemove", (e) => move(e.clientX, e.clientY));
+  window.addEventListener("mouseup", up);
+  wrap.addEventListener("touchstart", (e) => down(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+  wrap.addEventListener("touchmove", (e) => move(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+  wrap.addEventListener("touchend", up);
+}
+
 // lightweight canvas confetti burst — no external libraries
 function fireConfetti(originEl) {
   if (REDUCE_MOTION) return;
@@ -709,6 +833,8 @@ async function init() {
   initParallax();
   spawnParticles();
   animateCounters();
+  initCursorGlow();
+  initPromoPopup();
 
   const [countries, tours, hotels, reviews, partners, discounts] = await Promise.all([
     fetchJSON("/api/countries"),
@@ -745,6 +871,7 @@ async function init() {
     }))
   );
   wireTooltips();
+  initGlobe();
 }
 
 init().catch((err) => console.error("Ошибка загрузки данных:", err));
