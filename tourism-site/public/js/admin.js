@@ -71,6 +71,7 @@ async function loadLeads() {
         </select>
       </td>
       <td><input class="amount-input" type="number" value="${l.amount ?? ""}" placeholder="сумма" style="width:90px;" /></td>
+      <td>${l.pointsRedeemed ? `списано: ${l.pointsRedeemed}` : l.pointsRequested ? `хочет списать: ${l.pointsRequested}` : "—"}</td>
       <td><button class="btn btn-primary small-btn save-lead">Сохранить</button></td>
     </tr>`
     )

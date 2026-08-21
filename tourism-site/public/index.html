@@ -281,6 +281,11 @@
         <input name="kids" type="number" min="0" value="0" placeholder="Дети" />
       </div>
       <textarea name="comment" rows="3" placeholder="Пожелания к туру"></textarea>
+      <input type="hidden" name="tourPrice" id="modalTourPrice" value="" />
+      <div class="bonus-redeem" id="bonusRedeemBlock" style="display:none">
+        <label for="modalPoints">Списать бонусные баллы (доступно: <span id="bonusAvailable">0</span>)</label>
+        <input type="number" name="pointsRequested" id="modalPoints" min="0" value="0" />
+      </div>
       <button type="submit" class="btn btn-primary">Отправить заявку</button>
       <p class="form-note" id="modalFormNote"></p>
     </form>

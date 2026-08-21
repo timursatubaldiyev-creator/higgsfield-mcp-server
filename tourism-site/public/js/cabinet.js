@@ -116,6 +116,7 @@ async function showDashboard() {
             ${formatDate(l.createdAt)} · бюджет: ${l.budget || "—"} · ${l.adults} взр. ${l.kids ? "+ " + l.kids + " дет." : ""}
           </div>
           ${l.comment ? `<div style="margin-top:.3rem;">${l.comment}</div>` : ""}
+          ${l.pointsRedeemed ? `<div style="margin-top:.3rem;color:var(--terracotta-deep);font-weight:600;">Списано баллов: ${l.pointsRedeemed}</div>` : l.pointsRequested ? `<div style="margin-top:.3rem;color:var(--ink-soft);">Запрошено к списанию: ${l.pointsRequested}</div>` : ""}
         </div>`
         )
         .join("");

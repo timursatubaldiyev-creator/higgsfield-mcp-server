@@ -329,6 +329,11 @@ textarea{ resize:vertical; }
 .modal-close{ position:absolute; top:1rem; right:1.1rem; background:none; border:none; font-size:1.6rem; line-height:1; color:var(--ink-soft); }
 .modal form{ display:flex; flex-direction:column; gap:.8rem; }
 
+.bonus-redeem{ background:var(--cream-deep); border-radius:10px; padding:.8rem .9rem; }
+.bonus-redeem label{ display:block; font-size:.78rem; color:var(--ink-soft); margin-bottom:.4rem; }
+.bonus-redeem #bonusAvailable{ font-weight:700; color:var(--terracotta-deep); }
+.bonus-redeem input{ background:var(--paper); }
+
 .star-picker{ display:flex; gap:.3rem; }
 .star-picker button{ background:none; border:none; font-size:1.6rem; color:var(--line); }
 .star-picker button.active{ color:var(--gold); }

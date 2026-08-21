@@ -13,6 +13,8 @@ const PUBLIC_DIR = path.join(__dirname, "public");
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "dev-admin-token";
 const PORT = process.env.PORT || 3000;
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 if (!process.env.JWT_SECRET) {
   console.warn(
@@ -73,6 +75,36 @@ function publicUser(u) {
   const { passwordHash, ...rest } = u;
   return rest;
 }
+function countryDisplayName(id) {
+  if (!id) return "";
+  const c = readCollection("countries").find((c) => c.id === id);
+  return c ? c.name : id;
+}
+
+// fire-and-forget Telegram notification for new leads; no-op if not configured
+function notifyTelegram(lead) {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
+  const lines = [
+    "🆕 Новая заявка — Меридиан",
+    `Имя: ${lead.name}`,
+    `Телефон: ${lead.phone}`,
+    lead.email ? `Email: ${lead.email}` : null,
+    `Направление: ${countryDisplayName(lead.countryId) || "не указано"}`,
+    lead.budget ? `Бюджет: ${lead.budget}` : null,
+    lead.dateFrom ? `Даты: ${lead.dateFrom}${lead.dateTo ? " — " + lead.dateTo : ""}` : null,
+    `Гости: ${lead.adults} взр.${lead.kids ? ", " + lead.kids + " дет." : ""}`,
+    lead.comment ? `Комментарий: ${lead.comment}` : null,
+    lead.pointsRequested ? `Хочет списать баллов: ${lead.pointsRequested}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: lines }),
+  }).catch((err) => console.warn("[telegram] notify failed:", err.message));
+}
 
 const app = express();
 app.use(express.json());
@@ -126,7 +158,7 @@ app.get("/api/discounts", (req, res) => res.json(readCollection("discounts")));
 
 // ---------- lead / tour request form ----------
 app.post("/api/leads", (req, res) => {
-  const { name, phone, email, countryId, budget, dateFrom, dateTo, adults, kids, comment } =
+  const { name, phone, email, countryId, budget, dateFrom, dateTo, adults, kids, comment, tourPrice, pointsRequested } =
     req.body || {};
   if (!name || !phone) {
     return res.status(400).json({ error: "Укажите имя и телефон" });
@@ -160,10 +192,17 @@ app.post("/api/leads", (req, res) => {
     userId,
     status: "new",
     amount: null,
+    // client-supplied hint only — never trusted for money math, just shown to the manager
+    tourPriceHint: Math.max(0, Number(tourPrice) || 0) || null,
+    // how many points the tourist would like to redeem; actually deducted (and capped
+    // against the real, admin-confirmed amount) only when the lead is marked completed
+    pointsRequested: userId ? Math.max(0, Math.floor(Number(pointsRequested)) || 0) : 0,
+    pointsRedeemed: 0,
     createdAt: new Date().toISOString(),
   };
   leads.push(lead);
   writeCollection("leads", leads);
+  notifyTelegram(lead);
   res.status(201).json({ ok: true, id: lead.id });
 });
 
@@ -229,17 +268,32 @@ app.patch("/api/admin/leads/:id", requireAdmin, (req, res) => {
   if (status) lead.status = status;
   if (amount !== undefined) lead.amount = Number(amount) || null;
 
-  // award loyalty bonus (5% of tour amount) once, when a lead is marked completed
+  // settle loyalty points once, when a lead is marked completed with a final amount:
+  // 1) redeem the points the tourist requested (capped at their balance and 30% of the amount)
+  // 2) award 5% of the amount actually payable (after redemption) as new bonus points
   if (!wasCompleted && lead.status === "completed" && lead.amount) {
     const users = readCollection("users");
     const user =
       users.find((u) => u.id === lead.userId) ||
       users.find((u) => u.email.toLowerCase() === lead.email.toLowerCase());
     if (user) {
-      const points = Math.round(lead.amount * 0.05);
-      user.bonusPoints += points;
+      const redeemCap = Math.floor(lead.amount * 0.3);
+      const redeemed = Math.min(lead.pointsRequested || 0, user.bonusPoints, redeemCap);
+      if (redeemed > 0) {
+        user.bonusPoints -= redeemed;
+        user.bonusHistory.push({
+          points: -redeemed,
+          reason: `Списание на тур: ${lead.countryId || "—"}`,
+          date: new Date().toISOString(),
+        });
+        lead.pointsRedeemed = redeemed;
+      }
+
+      const payable = Math.max(0, lead.amount - redeemed);
+      const earned = Math.round(payable * 0.05);
+      user.bonusPoints += earned;
       user.bonusHistory.push({
-        points,
+        points: earned,
         reason: `Тур: ${lead.countryId || "—"} (${lead.amount}$)`,
         date: new Date().toISOString(),
       });

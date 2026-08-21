@@ -15,6 +15,43 @@ function countryName(id) {
   return c ? c.name : "—";
 }
 
+// ---------- bonus points redemption ----------
+let cachedBalance = null;
+async function ensureUserBalance() {
+  const token = localStorage.getItem("meridian_token");
+  if (!token) return null;
+  if (cachedBalance !== null) return cachedBalance;
+  try {
+    const me = await fetchJSON("/api/me", { headers: { Authorization: `Bearer ${token}` } });
+    cachedBalance = me.bonusPoints;
+    return cachedBalance;
+  } catch {
+    return null;
+  }
+}
+
+async function showBonusWidget(price) {
+  const block = document.getElementById("bonusRedeemBlock");
+  document.getElementById("modalTourPrice").value = price || "";
+  const balance = await ensureUserBalance();
+  if (!balance || !price) {
+    block.style.display = "none";
+    return;
+  }
+  const max = Math.min(balance, Math.floor(price * 0.3));
+  document.getElementById("bonusAvailable").textContent = max.toLocaleString("ru-RU");
+  const pointsInput = document.getElementById("modalPoints");
+  pointsInput.max = max;
+  pointsInput.value = 0;
+  block.style.display = max > 0 ? "block" : "none";
+}
+
+function hideBonusWidget() {
+  document.getElementById("bonusRedeemBlock").style.display = "none";
+  document.getElementById("modalTourPrice").value = "";
+  document.getElementById("modalPoints").value = 0;
+}
+
 // ---------- selects ----------
 function fillCountrySelects() {
   const selects = ["qfCountry", "cfCountry", "modalCountry", "reviewCountry"];
@@ -52,6 +89,7 @@ function renderDestinations() {
     a.addEventListener("click", (e) => {
       const countryId = e.currentTarget.dataset.country;
       document.getElementById("modalCountry").value = countryId;
+      hideBonusWidget();
       openModal("requestModal");
     })
   );
@@ -81,17 +119,18 @@ function renderHotTours(tours) {
         ${t.oldPrice ? `<span class="pass-old">$${t.oldPrice}</span>` : ""}
         <span class="pass-price">$${t.price}</span>
         <span class="pass-seats">осталось ${t.seatsLeft} мест</span>
-        <button class="btn btn-primary pass-cta" data-country="${t.countryId}" data-tour="${t.title}">Забронировать</button>
+        <button class="btn btn-primary pass-cta" data-country="${t.countryId}" data-tour="${t.title}" data-price="${t.price}">Забронировать</button>
       </div>
     </article>`;
     })
     .join("");
 
   grid.querySelectorAll(".pass-cta").forEach((btn) =>
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener("click", async (e) => {
       document.getElementById("modalCountry").value = e.currentTarget.dataset.country;
       const commentField = document.querySelector('#modalRequestForm textarea[name="comment"]');
       commentField.value = `Интересует горящий тур: ${e.currentTarget.dataset.tour}`;
+      await showBonusWidget(Number(e.currentTarget.dataset.price));
       openModal("requestModal");
     })
   );
@@ -153,7 +192,7 @@ function renderHotels() {
         </div>
         <div class="hotel-price">
           <span>от <strong>$${h.priceFrom}</strong></span>
-          <button class="btn btn-ghost hotel-cta" data-country="${h.countryId}" data-hotel="${h.name}">Подобрать тур</button>
+          <button class="btn btn-ghost hotel-cta" data-country="${h.countryId}" data-hotel="${h.name}" data-price="${h.priceFrom}">Подобрать тур</button>
         </div>
       </div>
     </article>`
@@ -161,10 +200,11 @@ function renderHotels() {
     .join("");
 
   grid.querySelectorAll(".hotel-cta").forEach((btn) =>
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener("click", async (e) => {
       document.getElementById("modalCountry").value = e.currentTarget.dataset.country;
       const commentField = document.querySelector('#modalRequestForm textarea[name="comment"]');
       commentField.value = `Интересует отель: ${e.currentTarget.dataset.hotel}`;
+      await showBonusWidget(Number(e.currentTarget.dataset.price));
       openModal("requestModal");
     })
   );
@@ -449,7 +489,10 @@ function closeModal(id) {
 }
 
 function wireModals() {
-  document.getElementById("openRequestBtn").addEventListener("click", () => openModal("requestModal"));
+  document.getElementById("openRequestBtn").addEventListener("click", () => {
+    hideBonusWidget();
+    openModal("requestModal");
+  });
   document.getElementById("closeRequestModal").addEventListener("click", () => closeModal("requestModal"));
   document.getElementById("openReviewBtn").addEventListener("click", () => openModal("reviewModal"));
   document.getElementById("closeReviewModal").addEventListener("click", () => closeModal("reviewModal"));
@@ -486,6 +529,8 @@ async function submitLead(form, noteEl) {
     noteEl.textContent = "Заявка отправлена! Мы свяжемся с вами в ближайшее время.";
     fireConfetti(form.querySelector('button[type="submit"]'));
     form.reset();
+    hideBonusWidget();
+    cachedBalance = null;
   } catch (err) {
     noteEl.textContent = err.message;
     noteEl.classList.add("error");
@@ -511,6 +556,7 @@ function wireForms() {
     document.getElementById("modalCountry").value = fd.get("countryId") || "";
     document.querySelector('#modalRequestForm input[name="budget"]').value = fd.get("budget") || "";
     document.querySelector('#modalRequestForm input[name="dateFrom"]').value = fd.get("dateFrom") || "";
+    hideBonusWidget();
     openModal("requestModal");
   });
 
