@@ -87,14 +87,32 @@ h1,h2,h3{ font-family:var(--font-display); font-weight:600; margin:0 0 .4em; let
 /* ---------- hero ---------- */
 .hero{ position:relative; padding:5.5rem 0 4.5rem; overflow:hidden; }
 .hero-mesh{
-  position:absolute; inset:-20% -10%; z-index:0;
+  position:absolute; inset:-20% -10%; z-index:0; will-change:transform;
   background:
     radial-gradient(45% 55% at 15% 20%, rgba(193,80,46,.28), transparent 60%),
     radial-gradient(40% 50% at 85% 15%, rgba(18,102,106,.25), transparent 60%),
     radial-gradient(55% 60% at 60% 90%, rgba(224,150,79,.30), transparent 60%);
   filter:blur(10px);
 }
+.hero-particles{ position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+.particle{
+  position:absolute; bottom:-40px; border-radius:50%; opacity:0;
+  background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.9), rgba(224,150,79,.05) 70%);
+  animation:float-up linear infinite;
+  filter:blur(.3px);
+}
+.particle.plane{
+  background:none; border-radius:0; font-size:1.1rem; filter:none;
+  display:flex; align-items:center; justify-content:center; opacity:0;
+}
+@keyframes float-up{
+  0%{ transform:translate(0,0) rotate(0deg); opacity:0; }
+  8%{ opacity:.85; }
+  92%{ opacity:.6; }
+  100%{ transform:translate(var(--drift,40px),-118vh) rotate(var(--spin,25deg)); opacity:0; }
+}
 .hero-inner{ position:relative; z-index:1; max-width:760px; }
+.counter{ font-variant-numeric:tabular-nums; }
 .eyebrow{ text-transform:uppercase; letter-spacing:.14em; font-size:.75rem; font-weight:700; color:var(--terracotta-deep); margin:0 0 1rem; }
 .hero h1{ font-size:clamp(2.4rem,5.4vw,4.1rem); line-height:1.04; margin-bottom:1rem; }
 .hero-sub{ font-size:1.12rem; color:var(--ink-soft); max-width:520px; margin-bottom:2.4rem; }
@@ -137,12 +155,14 @@ h1,h2,h3{ font-family:var(--font-display); font-weight:600; margin:0 0 .4em; let
 .season-grid{ grid-template-columns:repeat(3,1fr); }
 
 /* ---------- destination cards ---------- */
+.destinations-grid{ perspective:1400px; }
 .dest-card{
   position:relative; border-radius:var(--radius); overflow:hidden; min-height:340px;
   display:flex; flex-direction:column; justify-content:flex-end; padding:1.6rem;
-  color:#fff; box-shadow:var(--shadow); transition:transform .35s ease;
+  color:#fff; box-shadow:var(--shadow); transition:transform .35s ease, box-shadow .35s ease;
+  transform-style:preserve-3d; will-change:transform;
 }
-.dest-card:hover{ transform:translateY(-6px); }
+.dest-card:hover{ box-shadow:0 30px 55px -20px rgba(36,24,17,.55); }
 .dest-card::before{
   content:""; position:absolute; inset:0;
   background:linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.75) 100%);
@@ -158,11 +178,13 @@ h1,h2,h3{ font-family:var(--font-display); font-weight:600; margin:0 0 .4em; let
 .dest-meta a{ font-weight:700; text-decoration:underline; }
 
 /* ---------- hot deal boarding-pass cards ---------- */
-.hot-grid{ color:var(--ink); }
+.hot-grid{ color:var(--ink); perspective:1400px; }
 .pass-card{
   background:var(--paper); border-radius:14px; position:relative; box-shadow:var(--shadow);
   display:grid; grid-template-columns:1fr auto; overflow:hidden;
+  transition:transform .35s ease, box-shadow .35s ease; transform-style:preserve-3d; will-change:transform;
 }
+.pass-card:hover{ box-shadow:0 30px 55px -20px rgba(36,24,17,.4); }
 .pass-main{ padding:1.5rem 1.3rem; }
 .pass-badge{
   display:inline-block; background:var(--terracotta); color:#fff; font-size:.72rem; font-weight:700;
@@ -203,10 +225,16 @@ h1,h2,h3{ font-family:var(--font-display); font-weight:600; margin:0 0 .4em; let
 .filter-chip.active{ background:var(--ink); color:var(--cream); border-color:var(--ink); }
 
 /* ---------- hotel cards ---------- */
-.hotel-card{ background:var(--paper); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); }
+.hotels-grid{ perspective:1400px; }
+.hotel-card{
+  background:var(--paper); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow);
+  transition:transform .35s ease, box-shadow .35s ease; transform-style:preserve-3d; will-change:transform;
+}
+.hotel-card:hover{ box-shadow:0 30px 55px -20px rgba(36,24,17,.4); }
 .hotel-media{ height:150px; }
 .hotel-body{ padding:1.4rem; }
-.hotel-stars{ color:var(--gold); font-size:.85rem; margin-bottom:.3rem; }
+.hotel-stars{ color:var(--gold); font-size:.85rem; margin-bottom:.3rem; display:inline-block; transition:transform .3s ease, letter-spacing .3s ease; }
+.hotel-card:hover .hotel-stars{ transform:scale(1.08); letter-spacing:.12em; }
 .hotel-card h3{ font-size:1.1rem; margin-bottom:.2rem; }
 .hotel-board{ font-size:.78rem; color:var(--teal-deep); font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:.6rem; }
 .hotel-card p.desc{ font-size:.86rem; color:var(--ink-soft); margin:0 0 .9rem; }
@@ -313,6 +341,19 @@ textarea{ resize:vertical; }
   .bonus-wrap, .contacts-wrap{ grid-template-columns:1fr; }
   .footer-row{ grid-template-columns:1fr 1fr; }
 }
+#confettiCanvas{
+  position:fixed; inset:0; width:100vw; height:100vh; z-index:2000;
+  pointer-events:none;
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  .particle{ display:none; }
+  .reveal{ opacity:1; transform:none; transition:none; }
+  .hero-mesh{ transform:none !important; }
+  .dest-card, .pass-card, .hotel-card{ transition:none; }
+}
+
 @media (max-width: 640px){
   .header-actions .phone-link, .header-actions .btn-ghost{ display:none; }
   .destinations-grid, .hot-grid, .discounts-grid, .hotels-grid, .reviews-grid, .season-grid{ grid-template-columns:1fr; }

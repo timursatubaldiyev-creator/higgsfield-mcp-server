@@ -43,7 +43,8 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-mesh" aria-hidden="true"></div>
+    <div class="hero-mesh" id="heroMesh" aria-hidden="true"></div>
+    <div class="hero-particles" id="heroParticles" aria-hidden="true"></div>
     <div class="wrap hero-inner">
       <p class="eyebrow">Тревел-агентство полного цикла · с 2011 года</p>
       <h1>Найдите тур,<br/><span class="italic">который запомнится</span></h1>
@@ -68,9 +69,9 @@
       </form>
 
       <div class="hero-stats">
-        <div><strong>14&nbsp;лет</strong><span>на рынке туризма</span></div>
-        <div><strong>32&nbsp;направления</strong><span>во всех сезонах</span></div>
-        <div><strong>9&nbsp;800+</strong><span>довольных туристов</span></div>
+        <div><strong class="counter" data-target="14" data-suffix=" лет">0</strong><span>на рынке туризма</span></div>
+        <div><strong class="counter" data-target="32" data-suffix=" направления">0</strong><span>во всех сезонах</span></div>
+        <div><strong class="counter" data-target="9800" data-suffix="+">0</strong><span>довольных туристов</span></div>
       </div>
     </div>
   </section>
@@ -312,6 +313,7 @@
   </div>
 </div>
 
+<canvas id="confettiCanvas" aria-hidden="true"></canvas>
 <script src="/js/app.js"></script>
 </body>
 </html>

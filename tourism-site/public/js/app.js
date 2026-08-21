@@ -1,4 +1,5 @@
 const MONTH_NAMES = ["", "Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
+const REDUCE_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const state = { countries: [], tours: [], hotels: [], reviews: [], selectedHotelCountry: "" };
 
@@ -55,6 +56,7 @@ function renderDestinations() {
     })
   );
   observeReveals();
+  refreshTilts();
 }
 
 // ---------- hot tours (boarding pass cards) ----------
@@ -94,6 +96,7 @@ function renderHotTours(tours) {
     })
   );
   observeReveals();
+  refreshTilts();
 }
 
 // ---------- discounts ----------
@@ -166,6 +169,7 @@ function renderHotels() {
     })
   );
   observeReveals();
+  refreshTilts();
 }
 
 // ---------- reviews ----------
@@ -268,6 +272,172 @@ function observeReveals() {
   });
 }
 
+// ---------- special effects ----------
+
+// parallax: hero background mesh drifts slower than the page scroll
+function initParallax() {
+  const mesh = document.getElementById("heroMesh");
+  const hero = document.querySelector(".hero");
+  if (!mesh || !hero || REDUCE_MOTION) return;
+  let ticking = false;
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const heroHeight = hero.offsetHeight;
+        if (window.scrollY < heroHeight * 1.4) {
+          mesh.style.transform = `translateY(${window.scrollY * 0.28}px)`;
+        }
+        ticking = false;
+      });
+    },
+    { passive: true }
+  );
+}
+
+// floating bokeh + drifting plane particles in the hero background
+function spawnParticles() {
+  const container = document.getElementById("heroParticles");
+  if (!container || REDUCE_MOTION) return;
+  const PLANE = "✈";
+  const count = 16;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement("span");
+    const isPlane = i % 5 === 0;
+    el.className = isPlane ? "particle plane" : "particle";
+    const size = isPlane ? 14 + Math.random() * 6 : 4 + Math.random() * 10;
+    const left = Math.random() * 100;
+    const duration = 14 + Math.random() * 12;
+    const delay = Math.random() * -duration;
+    const drift = (Math.random() - 0.5) * 160;
+    el.style.left = `${left}%`;
+    el.style.width = `${size}px`;
+    el.style.height = `${size}px`;
+    el.style.animationDuration = `${duration}s`;
+    el.style.animationDelay = `${delay}s`;
+    el.style.setProperty("--drift", `${drift}px`);
+    el.style.setProperty("--spin", `${(Math.random() - 0.5) * 50}deg`);
+    if (isPlane) {
+      el.textContent = PLANE;
+      el.style.color = "rgba(224,150,79,.55)";
+    }
+    container.appendChild(el);
+  }
+}
+
+// count-up animation for hero stat numbers
+function animateCounters() {
+  const counters = document.querySelectorAll(".counter");
+  if (!counters.length) return;
+  counters.forEach((el) => {
+    const target = Number(el.dataset.target) || 0;
+    const suffix = el.dataset.suffix || "";
+    if (REDUCE_MOTION) {
+      el.textContent = target.toLocaleString("ru-RU") + suffix;
+      return;
+    }
+    const duration = 1400;
+    const start = performance.now();
+    function tick(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(target * eased).toLocaleString("ru-RU") + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+// subtle 3D tilt on cards, following the cursor
+function enableTilt(selector) {
+  if (REDUCE_MOTION) return;
+  document.querySelectorAll(selector + ":not([data-tilt-bound])").forEach((card) => {
+    card.setAttribute("data-tilt-bound", "1");
+    const maxTilt = 7;
+    card.addEventListener("mousemove", (e) => {
+      const rect = card.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width - 0.5;
+      const py = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transition = "none";
+      card.style.transform = `perspective(900px) rotateX(${(-py * maxTilt).toFixed(2)}deg) rotateY(${(px * maxTilt).toFixed(2)}deg) translateZ(8px)`;
+    });
+    card.addEventListener("mouseleave", () => {
+      card.style.transition = "";
+      card.style.transform = "";
+    });
+  });
+}
+function refreshTilts() {
+  enableTilt(".dest-card");
+  enableTilt(".pass-card");
+  enableTilt(".hotel-card");
+}
+
+// lightweight canvas confetti burst — no external libraries
+function fireConfetti(originEl) {
+  if (REDUCE_MOTION) return;
+  const canvas = document.getElementById("confettiCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = window.innerWidth * dpr;
+  canvas.height = window.innerHeight * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const rect = originEl ? originEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 3, width: 0, height: 0 };
+  const originX = rect.left + rect.width / 2;
+  const originY = rect.top + rect.height / 2;
+
+  const colors = ["#c1502e", "#e0964f", "#12666a", "#f4c07a", "#faf3e6"];
+  const pieces = Array.from({ length: 70 }, () => ({
+    x: originX,
+    y: originY,
+    vx: (Math.random() - 0.5) * 11,
+    vy: -(Math.random() * 9 + 4),
+    size: 5 + Math.random() * 5,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    rotation: Math.random() * 360,
+    spin: (Math.random() - 0.5) * 18,
+    shape: Math.random() > 0.5 ? "rect" : "circle",
+  }));
+
+  const gravity = 0.32;
+  const start = performance.now();
+  function frame(now) {
+    const elapsed = now - start;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    pieces.forEach((p) => {
+      p.vy += gravity;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rotation += p.spin;
+      if (p.y < window.innerHeight + 20) alive = true;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rotation * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(0, 1 - elapsed / 2200);
+      if (p.shape === "rect") {
+        ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.6);
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    });
+    if (alive && elapsed < 2200) {
+      requestAnimationFrame(frame);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
 // ---------- modals ----------
 function openModal(id) {
   document.getElementById(id).classList.add("open");
@@ -314,6 +484,7 @@ async function submitLead(form, noteEl) {
       body: JSON.stringify(payload),
     });
     noteEl.textContent = "Заявка отправлена! Мы свяжемся с вами в ближайшее время.";
+    fireConfetti(form.querySelector('button[type="submit"]'));
     form.reset();
   } catch (err) {
     noteEl.textContent = err.message;
@@ -357,6 +528,7 @@ function wireForms() {
         body: JSON.stringify(payload),
       });
       noteEl.textContent = "Спасибо! Отзыв появится после проверки модератором.";
+      fireConfetti(e.target.querySelector('button[type="submit"]'));
       e.target.reset();
       setTimeout(() => closeModal("reviewModal"), 1600);
     } catch (err) {
@@ -388,6 +560,9 @@ async function init() {
   wireForms();
   wireBurger();
   observeReveals();
+  initParallax();
+  spawnParticles();
+  animateCounters();
 
   const [countries, tours, hotels, reviews, partners, discounts] = await Promise.all([
     fetchJSON("/api/countries"),
