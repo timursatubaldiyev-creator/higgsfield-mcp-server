@@ -106,6 +106,56 @@ function renderDestinations() {
   refreshTilts();
 }
 
+// ---------- accordion gallery: hover (or tap) to expand, click to open request ----------
+function initAccordionGallery(countries) {
+  const wrap = document.getElementById("accordionGallery");
+  if (!wrap || !countries.length) return;
+
+  const EXPAND_RATIO = 0.52;
+  const DEFAULT_INDEX = Math.min(2, countries.length - 1);
+  const total = countries.length;
+  const activeFlexGrow = (EXPAND_RATIO * (total - 1)) / (1 - EXPAND_RATIO);
+  const isTouch = window.matchMedia("(hover: none)").matches;
+
+  wrap.innerHTML = countries
+    .map(
+      (c, i) => `
+    <a href="#hotels" class="ag-panel ${i === DEFAULT_INDEX ? "ag-active" : ""}" data-index="${i}" data-country="${c.id}" style="background:${c.gradient}">
+      <span class="ag-label">${c.name}</span>
+      <span class="ag-cta">Подобрать тур →</span>
+    </a>`
+    )
+    .join("");
+
+  const panels = Array.from(wrap.querySelectorAll(".ag-panel"));
+
+  function setActive(index) {
+    panels.forEach((p, i) => {
+      const active = i === index;
+      p.classList.toggle("ag-active", active);
+      p.style.flexGrow = active ? activeFlexGrow : 1;
+    });
+  }
+  setActive(DEFAULT_INDEX);
+
+  panels.forEach((panel, i) => {
+    if (!isTouch) {
+      panel.addEventListener("mouseenter", () => setActive(i));
+    }
+    panel.addEventListener("click", (e) => {
+      if (isTouch && !panel.classList.contains("ag-active")) {
+        e.preventDefault();
+        setActive(i);
+        return;
+      }
+      e.preventDefault();
+      document.getElementById("modalCountry").value = panel.dataset.country;
+      hideBonusWidget();
+      openModal("requestModal");
+    });
+  });
+}
+
 // ---------- hot tours (boarding pass cards) ----------
 function renderHotTours(tours) {
   const grid = document.getElementById("hotGrid");
@@ -854,6 +904,7 @@ async function init() {
 
   fillCountrySelects();
   renderDestinations();
+  initAccordionGallery(countries);
   renderHotTours(tours.filter((t) => t.hot));
   renderDiscounts(discounts);
   renderHotelFilters();

@@ -217,6 +217,44 @@ h1,h2,h3{ font-family:var(--font-display); font-weight:600; margin:0 0 .4em; let
 .season-grid{ grid-template-columns:repeat(3,1fr); }
 
 /* ---------- destination cards ---------- */
+/* ---------- accordion gallery ---------- */
+.showcase-section .section-head{ max-width:680px; }
+.accordion-gallery{ display:flex; gap:.5rem; height:440px; }
+.ag-panel{
+  position:relative; flex:1 1 0%; min-width:0; border-radius:16px; overflow:hidden;
+  display:flex; align-items:flex-end; cursor:pointer; box-shadow:var(--shadow);
+  transition:flex-grow .55s cubic-bezier(.65,0,.35,1), box-shadow .3s ease;
+}
+.ag-panel:hover{ box-shadow:0 30px 55px -20px rgba(13,12,10,.55); }
+.ag-panel::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,.78) 100%);
+  transition:opacity .4s ease;
+}
+.ag-panel:not(.ag-active)::after{ opacity:.85; }
+.ag-label{
+  position:relative; z-index:1; color:#fff; font-family:var(--font-display); font-weight:600;
+}
+.ag-panel:not(.ag-active) .ag-label{
+  writing-mode:vertical-rl; transform:rotate(180deg); padding:1.1rem .5rem; font-size:.86rem; white-space:nowrap;
+}
+.ag-panel.ag-active .ag-label{ padding:1.7rem; font-size:1.25rem; }
+.ag-cta{
+  position:relative; z-index:1; display:block; padding:0 1.7rem 1.7rem; margin-top:-.6rem;
+  font-size:.82rem; font-weight:600; color:var(--gold); opacity:0; transform:translateY(6px);
+  transition:opacity .3s ease .1s, transform .3s ease .1s;
+}
+.ag-panel.ag-active .ag-cta{ opacity:1; transform:none; }
+@media (max-width: 760px){
+  .accordion-gallery{ height:360px; }
+}
+@media (max-width: 560px){
+  .accordion-gallery{ flex-direction:column; height:auto; }
+  .ag-panel{ height:56px; transition:height .5s cubic-bezier(.65,0,.35,1), box-shadow .3s ease; }
+  .ag-panel.ag-active{ height:220px; }
+  .ag-panel:not(.ag-active) .ag-label{ writing-mode:horizontal-tb; transform:none; padding:1rem 1.2rem; font-size:.92rem; }
+}
+
 .destinations-grid{ perspective:1400px; }
 .dest-card{
   position:relative; border-radius:var(--radius); overflow:hidden; min-height:340px;
