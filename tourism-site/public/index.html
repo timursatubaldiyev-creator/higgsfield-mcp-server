@@ -46,32 +46,41 @@
     <div class="hero-mesh" id="heroMesh" aria-hidden="true"></div>
     <div class="hero-particles" id="heroParticles" aria-hidden="true"></div>
     <div class="wrap hero-inner">
-      <p class="eyebrow">Тревел-агентство полного цикла · с 2011 года</p>
-      <h1>Найдите тур,<br/><span class="italic">который запомнится</span></h1>
-      <p class="hero-sub">Подбираем направления под ваш бюджет и даты, следим за горящими предложениями и начисляем бонусы за каждую поездку.</p>
+      <div class="hero-copy">
+        <p class="eyebrow">Тревел-агентство полного цикла · с 2011 года</p>
+        <h1>Найдите тур,<br/><span class="italic">который запомнится</span></h1>
+        <p class="hero-sub">Подбираем направления под ваш бюджет и даты, следим за горящими предложениями и начисляем бонусы за каждую поездку.</p>
 
-      <form class="quickfinder" id="quickFinderForm">
-        <div class="qf-field">
-          <label for="qfCountry">Куда</label>
-          <select id="qfCountry" name="countryId">
-            <option value="">Любая страна</option>
-          </select>
-        </div>
-        <div class="qf-field">
-          <label for="qfBudget">Бюджет, $</label>
-          <input id="qfBudget" name="budget" type="text" placeholder="до 1500" />
-        </div>
-        <div class="qf-field">
-          <label for="qfDate">Дата вылета</label>
-          <input id="qfDate" name="dateFrom" type="date" />
-        </div>
-        <button type="submit" class="btn btn-primary qf-submit">Подобрать тур</button>
-      </form>
+        <form class="quickfinder" id="quickFinderForm">
+          <div class="qf-field">
+            <label for="qfCountry">Куда</label>
+            <select id="qfCountry" name="countryId">
+              <option value="">Любая страна</option>
+            </select>
+          </div>
+          <div class="qf-field">
+            <label for="qfBudget">Бюджет, $</label>
+            <input id="qfBudget" name="budget" type="text" placeholder="до 1500" />
+          </div>
+          <div class="qf-field">
+            <label for="qfDate">Дата вылета</label>
+            <input id="qfDate" name="dateFrom" type="date" />
+          </div>
+          <button type="submit" class="btn btn-primary qf-submit">Подобрать тур</button>
+        </form>
 
-      <div class="hero-stats">
-        <div><strong class="counter" data-target="14" data-suffix=" лет">0</strong><span>на рынке туризма</span></div>
-        <div><strong class="counter" data-target="32" data-suffix=" направления">0</strong><span>во всех сезонах</span></div>
-        <div><strong class="counter" data-target="9800" data-suffix="+">0</strong><span>довольных туристов</span></div>
+        <div class="hero-stats">
+          <div class="tip"><strong class="counter" data-target="14" data-suffix=" лет">0</strong><span>на рынке туризма</span><span class="tip-bubble">Работаем с 2011 года — четырнадцать сезонов подбора туров</span></div>
+          <div class="tip"><strong class="counter" data-target="32" data-suffix=" направления">0</strong><span>во всех сезонах</span><span class="tip-bubble">От пляжей Турции до гор Грузии — новые страны добавляются каждый сезон</span></div>
+          <div class="tip"><strong class="counter" data-target="9800" data-suffix="+">0</strong><span>довольных туристов</span><span class="tip-bubble">Столько туристов оформили тур через «Меридиан» с 2011 года</span></div>
+        </div>
+      </div>
+
+      <div class="hero-carousel" id="heroCarousel">
+        <div class="hc-track" id="hcTrack"></div>
+        <button class="hc-arrow hc-prev" id="hcPrev" aria-label="Предыдущий тур" type="button">‹</button>
+        <button class="hc-arrow hc-next" id="hcNext" aria-label="Следующий тур" type="button">›</button>
+        <div class="hc-dots" id="hcDots"></div>
       </div>
     </div>
   </section>

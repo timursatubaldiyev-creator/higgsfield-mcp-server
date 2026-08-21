@@ -68,13 +68,22 @@ function fillCountrySelects() {
 }
 
 // ---------- destinations ----------
+const TAG_EXPLAIN = {
+  "Всё включено": "Питание, напитки и часть развлечений уже включены в стоимость тура",
+  Дайвинг: "Одни из лучших коралловых рифов Красного моря — прямо у побережья",
+  Люкс: "Курорт для статусного отдыха: пятизвёздочные отели и премиальный сервис",
+  Острова: "Десятки островов с белым песком в паре часов от аэропорта",
+  Романтика: "Виллы на воде и приватные пляжи — популярное направление для медового месяца",
+  "Горы и вино": "Можно совместить пляжный отдых на побережье с поездкой в горы за один тур",
+};
+
 function renderDestinations() {
   const grid = document.getElementById("destinationsGrid");
   grid.innerHTML = state.countries
     .map(
       (c) => `
     <article class="dest-card reveal" style="background:${c.gradient}">
-      <span class="dest-tag">${c.tag}</span>
+      <span class="dest-tag tip">${c.tag}<span class="tip-bubble">${TAG_EXPLAIN[c.tag] || c.tag}</span></span>
       <h3>${c.name}</h3>
       <p>${c.description}</p>
       <div class="dest-meta">
@@ -243,7 +252,11 @@ async function renderSeason() {
       <div class="season-now"><strong>—</strong><span>сейчас</span></div>
       <div class="season-months">
         ${Array.from({ length: 12 }, (_, i) => i + 1)
-          .map((m) => `<span class="month-pill ${c.bestMonths.includes(m) ? "best" : ""}">${MONTH_NAMES[m]}</span>`)
+          .map((m) => {
+            const temp = c.avgSeaTemp[m];
+            const tipText = temp ? `Вода в ${MONTH_NAMES[m].toLowerCase()}е: ~${temp}°C` : `Нет данных о температуре воды`;
+            return `<span class="month-pill tip ${c.bestMonths.includes(m) ? "best" : ""}">${MONTH_NAMES[m]}<span class="tip-bubble">${tipText}</span></span>`;
+          })
           .join("")}
       </div>
     </article>`
@@ -361,7 +374,7 @@ function spawnParticles() {
     el.style.setProperty("--spin", `${(Math.random() - 0.5) * 50}deg`);
     if (isPlane) {
       el.textContent = PLANE;
-      el.style.color = "rgba(224,150,79,.55)";
+      el.style.color = "rgba(207,169,101,.55)";
     }
     container.appendChild(el);
   }
@@ -413,6 +426,93 @@ function refreshTilts() {
   enableTilt(".dest-card");
   enableTilt(".pass-card");
   enableTilt(".hotel-card");
+}
+
+// ---------- hero tour carousel: drag/swipe, arrows, dots, autoplay ----------
+function initHeroCarousel(tours) {
+  const container = document.getElementById("heroCarousel");
+  const track = document.getElementById("hcTrack");
+  const dotsWrap = document.getElementById("hcDots");
+  if (!container || !track || !tours.length) return;
+
+  track.innerHTML = tours
+    .map(
+      (t) => `
+    <div class="hc-slide" style="background:${t.gradient}">
+      <span class="hc-badge">${t.country}</span>
+      <h4>${t.title}</h4>
+      <p>${t.nights} ночей · от $${t.price}</p>
+    </div>`
+    )
+    .join("");
+  dotsWrap.innerHTML = tours
+    .map((_, i) => `<button class="hc-dot ${i === 0 ? "active" : ""}" data-i="${i}" aria-label="Слайд ${i + 1}" type="button"></button>`)
+    .join("");
+
+  let index = 0;
+  const total = tours.length;
+  function go(i) {
+    index = (i + total) % total;
+    track.style.transform = `translateX(-${index * 100}%)`;
+    dotsWrap.querySelectorAll(".hc-dot").forEach((d, j) => d.classList.toggle("active", j === index));
+  }
+  document.getElementById("hcPrev").addEventListener("click", () => go(index - 1));
+  document.getElementById("hcNext").addEventListener("click", () => go(index + 1));
+  dotsWrap.querySelectorAll(".hc-dot").forEach((d) => d.addEventListener("click", (e) => go(Number(e.currentTarget.dataset.i))));
+
+  let dragging = false;
+  let startX = 0;
+  let deltaX = 0;
+  function down(x) {
+    dragging = true;
+    startX = x;
+    deltaX = 0;
+    track.style.transition = "none";
+  }
+  function move(x) {
+    if (!dragging) return;
+    deltaX = x - startX;
+    track.style.transform = `translateX(calc(-${index * 100}% + ${deltaX}px))`;
+  }
+  function up() {
+    if (!dragging) return;
+    dragging = false;
+    track.style.transition = "";
+    if (Math.abs(deltaX) > 60) go(index + (deltaX < 0 ? 1 : -1));
+    else go(index);
+    deltaX = 0;
+  }
+  track.addEventListener("mousedown", (e) => down(e.clientX));
+  window.addEventListener("mousemove", (e) => move(e.clientX));
+  window.addEventListener("mouseup", up);
+  track.addEventListener("touchstart", (e) => down(e.touches[0].clientX), { passive: true });
+  track.addEventListener("touchmove", (e) => move(e.touches[0].clientX), { passive: true });
+  track.addEventListener("touchend", up);
+
+  if (!REDUCE_MOTION) {
+    let timer = setInterval(() => go(index + 1), 5000);
+    container.addEventListener("mouseenter", () => clearInterval(timer));
+    container.addEventListener("mouseleave", () => {
+      timer = setInterval(() => go(index + 1), 5000);
+    });
+  }
+}
+
+// ---------- tooltips: hover works via CSS, tap-to-toggle for touch ----------
+function wireTooltips() {
+  const isTouch = window.matchMedia("(hover: none)").matches;
+  if (!isTouch) return;
+  document.querySelectorAll(".tip").forEach((el) => {
+    if (el.dataset.tipBound) return;
+    el.dataset.tipBound = "1";
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const wasOpen = el.classList.contains("tip-open");
+      document.querySelectorAll(".tip.tip-open").forEach((t) => t.classList.remove("tip-open"));
+      if (!wasOpen) el.classList.add("tip-open");
+    });
+  });
+  document.addEventListener("click", () => document.querySelectorAll(".tip.tip-open").forEach((t) => t.classList.remove("tip-open")));
 }
 
 // lightweight canvas confetti burst — no external libraries
@@ -634,6 +734,17 @@ async function init() {
   renderSeason();
   renderPartners(partners);
   renderBonusPreview();
+
+  initHeroCarousel(
+    tours.map((t) => ({
+      title: t.title,
+      nights: t.nights,
+      price: t.price,
+      country: countryName(t.countryId),
+      gradient: countries.find((c) => c.id === t.countryId)?.gradient || "var(--ink)",
+    }))
+  );
+  wireTooltips();
 }
 
 init().catch((err) => console.error("Ошибка загрузки данных:", err));
