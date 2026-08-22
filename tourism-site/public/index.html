@@ -249,27 +249,57 @@
       <form class="contact-form" id="contactRequestForm">
         <h3>Оставить заявку</h3>
         <div class="form-row">
-          <input name="name" placeholder="Ваше имя" required />
-          <input name="phone" placeholder="Телефон" required />
+          <div class="field">
+            <label for="cfName">Ваше имя <span class="req" aria-hidden="true">*</span></label>
+            <input id="cfName" name="name" autocomplete="name" placeholder="Анна Иванова" required />
+          </div>
+          <div class="field">
+            <label for="cfPhone">Телефон <span class="req" aria-hidden="true">*</span></label>
+            <input id="cfPhone" name="phone" type="tel" autocomplete="tel" placeholder="+7 999 000-11-22" required />
+          </div>
         </div>
-        <input name="email" type="email" placeholder="Email (необязательно)" />
+        <div class="field">
+          <label for="cfEmail">Email <span class="opt">(необязательно)</span></label>
+          <input id="cfEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" />
+        </div>
         <div class="form-row">
-          <select name="countryId" id="cfCountry">
-            <option value="">Направление не выбрано</option>
-          </select>
-          <input name="budget" placeholder="Бюджет, $" />
+          <div class="field">
+            <label for="cfCountry">Направление</label>
+            <select name="countryId" id="cfCountry">
+              <option value="">Направление не выбрано</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="cfBudget">Бюджет, $</label>
+            <input id="cfBudget" name="budget" inputmode="numeric" placeholder="до 1500" />
+          </div>
         </div>
         <div class="form-row">
-          <input name="dateFrom" type="date" />
-          <input name="dateTo" type="date" />
+          <div class="field">
+            <label for="cfDateFrom">Дата вылета</label>
+            <input id="cfDateFrom" name="dateFrom" type="date" />
+          </div>
+          <div class="field">
+            <label for="cfDateTo">Дата возврата</label>
+            <input id="cfDateTo" name="dateTo" type="date" />
+          </div>
         </div>
         <div class="form-row">
-          <input name="adults" type="number" min="1" value="2" placeholder="Взрослые" />
-          <input name="kids" type="number" min="0" value="0" placeholder="Дети" />
+          <div class="field">
+            <label for="cfAdults">Взрослые</label>
+            <input id="cfAdults" name="adults" type="number" min="1" value="2" />
+          </div>
+          <div class="field">
+            <label for="cfKids">Дети</label>
+            <input id="cfKids" name="kids" type="number" min="0" value="0" />
+          </div>
         </div>
-        <textarea name="comment" rows="3" placeholder="Пожелания к туру"></textarea>
+        <div class="field">
+          <label for="cfComment">Пожелания к туру</label>
+          <textarea id="cfComment" name="comment" rows="3" placeholder="Например: отель у моря, детский клуб, прямой перелёт"></textarea>
+        </div>
         <button type="submit" class="btn btn-primary">Отправить заявку</button>
-        <p class="form-note" id="contactFormNote"></p>
+        <p class="form-note" id="contactFormNote" role="status" aria-live="polite"></p>
       </form>
     </div>
   </section>
@@ -305,74 +335,116 @@
 
 <!-- REQUEST MODAL -->
 <div class="modal-overlay" id="requestModal">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="requestModalTitle">
     <button class="modal-close" id="closeRequestModal" aria-label="Закрыть">×</button>
-    <h3>Оставить заявку на тур</h3>
+    <h3 id="requestModalTitle">Оставить заявку на тур</h3>
     <p class="modal-sub">Расскажите о своих предпочтениях — подберём варианты и свяжемся с вами.</p>
     <form id="modalRequestForm">
       <div class="form-row">
-        <input name="name" placeholder="Ваше имя" required />
-        <input name="phone" placeholder="Телефон" required />
+        <div class="field">
+          <label for="mfName">Ваше имя <span class="req" aria-hidden="true">*</span></label>
+          <input id="mfName" name="name" autocomplete="name" placeholder="Анна Иванова" required />
+        </div>
+        <div class="field">
+          <label for="mfPhone">Телефон <span class="req" aria-hidden="true">*</span></label>
+          <input id="mfPhone" name="phone" type="tel" autocomplete="tel" placeholder="+7 999 000-11-22" required />
+        </div>
       </div>
-      <input name="email" type="email" placeholder="Email (необязательно)" />
+      <div class="field">
+        <label for="mfEmail">Email <span class="opt">(необязательно)</span></label>
+        <input id="mfEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" />
+      </div>
       <div class="form-row">
-        <select name="countryId" id="modalCountry">
-          <option value="">Направление не выбрано</option>
-        </select>
-        <input name="budget" placeholder="Бюджет, $" />
+        <div class="field">
+          <label for="modalCountry">Направление</label>
+          <select name="countryId" id="modalCountry">
+            <option value="">Направление не выбрано</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="mfBudget">Бюджет, $</label>
+          <input id="mfBudget" name="budget" inputmode="numeric" placeholder="до 1500" />
+        </div>
       </div>
       <div class="form-row">
-        <input name="dateFrom" type="date" />
-        <input name="dateTo" type="date" />
+        <div class="field">
+          <label for="mfDateFrom">Дата вылета</label>
+          <input id="mfDateFrom" name="dateFrom" type="date" />
+        </div>
+        <div class="field">
+          <label for="mfDateTo">Дата возврата</label>
+          <input id="mfDateTo" name="dateTo" type="date" />
+        </div>
       </div>
       <div class="form-row">
-        <input name="adults" type="number" min="1" value="2" placeholder="Взрослые" />
-        <input name="kids" type="number" min="0" value="0" placeholder="Дети" />
+        <div class="field">
+          <label for="mfAdults">Взрослые</label>
+          <input id="mfAdults" name="adults" type="number" min="1" value="2" />
+        </div>
+        <div class="field">
+          <label for="mfKids">Дети</label>
+          <input id="mfKids" name="kids" type="number" min="0" value="0" />
+        </div>
       </div>
-      <textarea name="comment" rows="3" placeholder="Пожелания к туру"></textarea>
+      <div class="field">
+        <label for="mfComment">Пожелания к туру</label>
+        <textarea id="mfComment" name="comment" rows="3" placeholder="Например: отель у моря, детский клуб, прямой перелёт"></textarea>
+      </div>
       <input type="hidden" name="tourPrice" id="modalTourPrice" value="" />
       <div class="bonus-redeem" id="bonusRedeemBlock" style="display:none">
         <label for="modalPoints">Списать бонусные баллы (доступно: <span id="bonusAvailable">0</span>)</label>
         <input type="number" name="pointsRequested" id="modalPoints" min="0" value="0" />
       </div>
       <button type="submit" class="btn btn-primary">Отправить заявку</button>
-      <p class="form-note" id="modalFormNote"></p>
+      <p class="form-note" id="modalFormNote" role="status" aria-live="polite"></p>
     </form>
   </div>
 </div>
 
 <!-- REVIEW MODAL -->
 <div class="modal-overlay" id="reviewModal">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
     <button class="modal-close" id="closeReviewModal" aria-label="Закрыть">×</button>
-    <h3>Оставить отзыв</h3>
+    <h3 id="reviewModalTitle">Оставить отзыв</h3>
     <p class="modal-sub">Отзыв появится на сайте после проверки модератором.</p>
     <form id="reviewForm">
-      <input name="name" placeholder="Ваше имя" required />
-      <select name="countryId" id="reviewCountry">
-        <option value="">Страна поездки</option>
-      </select>
-      <div class="star-picker" id="starPicker">
-        <button type="button" data-star="1">★</button>
-        <button type="button" data-star="2">★</button>
-        <button type="button" data-star="3">★</button>
-        <button type="button" data-star="4">★</button>
-        <button type="button" data-star="5">★</button>
+      <div class="field">
+        <label for="rfName">Ваше имя <span class="req" aria-hidden="true">*</span></label>
+        <input id="rfName" name="name" autocomplete="name" placeholder="Анна Иванова" required />
+      </div>
+      <div class="field">
+        <label for="reviewCountry">Страна поездки</label>
+        <select name="countryId" id="reviewCountry">
+          <option value="">Страна поездки</option>
+        </select>
+      </div>
+      <div class="field">
+        <span id="starPickerLabel">Оценка</span>
+        <div class="star-picker" id="starPicker" role="radiogroup" aria-labelledby="starPickerLabel">
+          <button type="button" data-star="1" role="radio" aria-label="1 из 5" aria-checked="false">★</button>
+          <button type="button" data-star="2" role="radio" aria-label="2 из 5" aria-checked="false">★</button>
+          <button type="button" data-star="3" role="radio" aria-label="3 из 5" aria-checked="false">★</button>
+          <button type="button" data-star="4" role="radio" aria-label="4 из 5" aria-checked="false">★</button>
+          <button type="button" data-star="5" role="radio" aria-label="5 из 5" aria-checked="true">★</button>
+        </div>
       </div>
       <input type="hidden" name="rating" id="reviewRating" value="5" />
-      <textarea name="text" rows="4" placeholder="Расскажите о поездке" required></textarea>
+      <div class="field">
+        <label for="rfText">Ваш отзыв <span class="req" aria-hidden="true">*</span></label>
+        <textarea id="rfText" name="text" rows="4" placeholder="Расскажите о поездке" required></textarea>
+      </div>
       <button type="submit" class="btn btn-primary">Отправить отзыв</button>
-      <p class="form-note" id="reviewFormNote"></p>
+      <p class="form-note" id="reviewFormNote" role="status" aria-live="polite"></p>
     </form>
   </div>
 </div>
 
 <!-- PROMO POPUP -->
 <div class="modal-overlay" id="promoModal">
-  <div class="modal promo-modal">
+  <div class="modal promo-modal" role="dialog" aria-modal="true" aria-labelledby="promoModalTitle">
     <button class="modal-close" id="closePromoModal" aria-label="Закрыть">×</button>
     <p class="promo-eyebrow">Только сегодня</p>
-    <h3>Скидка 5% на первый тур</h3>
+    <h3 id="promoModalTitle">Скидка 5% на первый тур</h3>
     <p class="modal-sub">Оставьте заявку в ближайшие несколько минут — подберём варианты и применим скидку при бронировании.</p>
     <button class="btn btn-primary promo-cta" id="promoCta" type="button">Получить скидку</button>
   </div>

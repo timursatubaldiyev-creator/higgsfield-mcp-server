@@ -884,14 +884,45 @@ function fireConfetti(originEl) {
 }
 
 // ---------- modals ----------
+let modalReturnFocus = null;
+const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 function openModal(id) {
-  document.getElementById(id).classList.add("open");
+  modalReturnFocus = document.activeElement;
+  const overlay = document.getElementById(id);
+  overlay.classList.add("open");
   document.body.style.overflow = "hidden";
+  const dialog = overlay.querySelector(".modal");
+  const firstField = dialog.querySelector('input, select, textarea');
+  (firstField || dialog.querySelector(FOCUSABLE_SELECTOR))?.focus();
 }
 function closeModal(id) {
   document.getElementById(id).classList.remove("open");
   document.body.style.overflow = "";
+  if (modalReturnFocus && document.body.contains(modalReturnFocus)) modalReturnFocus.focus();
+  modalReturnFocus = null;
 }
+
+document.addEventListener("keydown", (e) => {
+  const openOverlay = document.querySelector(".modal-overlay.open");
+  if (!openOverlay) return;
+  if (e.key === "Escape") {
+    closeModal(openOverlay.id);
+    return;
+  }
+  if (e.key !== "Tab") return;
+  const focusable = Array.from(openOverlay.querySelectorAll(FOCUSABLE_SELECTOR)).filter((el) => el.offsetParent !== null);
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+});
 
 function wireModals() {
   document.getElementById("openRequestBtn").addEventListener("click", () => {
@@ -908,14 +939,18 @@ function wireModals() {
   });
 
   const starPicker = document.getElementById("starPicker");
+  function setStarRating(val) {
+    document.getElementById("reviewRating").value = val;
+    starPicker.querySelectorAll("button").forEach((b) => {
+      const star = Number(b.dataset.star);
+      b.classList.toggle("active", star <= val);
+      b.setAttribute("aria-checked", String(star === val));
+    });
+  }
   starPicker.querySelectorAll("button").forEach((btn) =>
-    btn.addEventListener("click", () => {
-      const val = Number(btn.dataset.star);
-      document.getElementById("reviewRating").value = val;
-      starPicker.querySelectorAll("button").forEach((b) => b.classList.toggle("active", Number(b.dataset.star) <= val));
-    })
+    btn.addEventListener("click", () => setStarRating(Number(btn.dataset.star)))
   );
-  starPicker.querySelectorAll("button").forEach((b) => b.classList.toggle("active", Number(b.dataset.star) <= 5));
+  setStarRating(5);
 }
 
 // ---------- forms ----------

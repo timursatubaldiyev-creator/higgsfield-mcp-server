@@ -408,6 +408,15 @@ textarea{ resize:vertical; }
 .form-note{ font-size:.82rem; min-height:1.2em; color:var(--teal-deep); font-weight:600; }
 .form-note.error{ color:var(--terracotta-deep); }
 
+.field{ display:flex; flex-direction:column; gap:.35rem; }
+.field label{ font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); font-weight:600; }
+.field label .req{ color:var(--terracotta); margin-left:.15em; }
+.field label .opt{ text-transform:none; letter-spacing:0; font-weight:400; color:var(--ink-soft); opacity:.75; }
+
+/* visible keyboard focus ring, consistent across light and dark sections */
+:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; border-radius:4px; }
+.section-dark :focus-visible, .hero :focus-visible{ outline-color:var(--gold); outline-offset:3px; }
+
 /* ---------- footer ---------- */
 .site-footer{ background:var(--ink); color:var(--cream); padding:4rem 0 1.6rem; }
 .footer-row{ display:grid; grid-template-columns:1.6fr 1fr 1fr; gap:2.4rem; }
