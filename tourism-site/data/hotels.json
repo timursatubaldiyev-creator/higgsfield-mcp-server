@@ -1,0 +1,92 @@
+[
+  {
+    "id": "h1",
+    "countryId": "turkey",
+    "name": "Rixos Sunset Antalya",
+    "stars": 5,
+    "priceFrom": 1450,
+    "board": "Ultra All Inclusive",
+    "description": "Первая линия, аквапарк, 9 ресторанов, детский клуб. Один из самых популярных отелей Белека.",
+    "amenities": ["Пляж 1-я линия", "Аквапарк", "Spa", "Детский клуб", "Wi-Fi"],
+    "gradient": "linear-gradient(135deg,#1a1613,#b9975f)",
+    "externalReviews": {
+      "tripadvisor": { "rating": 4.6, "count": 3421, "url": "https://www.tripadvisor.com/" },
+      "booking": { "rating": 9.1, "count": 5210, "url": "https://www.booking.com/" }
+    }
+  },
+  {
+    "id": "h2",
+    "countryId": "egypt",
+    "name": "Steigenberger Aqua Magic",
+    "stars": 5,
+    "priceFrom": 980,
+    "board": "All Inclusive",
+    "description": "Огромная зелёная территория, лучший аквапарк Хургады, собственный риф для снорклинга.",
+    "amenities": ["Коралловый риф", "Аквапарк", "Дайв-центр", "5 бассейнов"],
+    "gradient": "linear-gradient(135deg,#0d0f0d,#a8a179)",
+    "externalReviews": {
+      "tripadvisor": { "rating": 4.4, "count": 2870, "url": "https://www.tripadvisor.com/" },
+      "booking": { "rating": 8.7, "count": 4110, "url": "https://www.booking.com/" }
+    }
+  },
+  {
+    "id": "h3",
+    "countryId": "uae",
+    "name": "Atlantis The Palm",
+    "stars": 5,
+    "priceFrom": 3200,
+    "board": "Завтрак",
+    "description": "Легендарный отель на Пальме Джумейра с собственным аквапарком Aquaventure и подводным номером.",
+    "amenities": ["Аквапарк", "Аквариум", "Частный пляж", "Мишлен-рестораны"],
+    "gradient": "linear-gradient(135deg,#141110,#cbb37c)",
+    "externalReviews": {
+      "tripadvisor": { "rating": 4.7, "count": 9800, "url": "https://www.tripadvisor.com/" },
+      "booking": { "rating": 9.3, "count": 6720, "url": "https://www.booking.com/" }
+    }
+  },
+  {
+    "id": "h4",
+    "countryId": "thailand",
+    "name": "Katathani Phuket Beach Resort",
+    "stars": 5,
+    "priceFrom": 1550,
+    "board": "Завтрак",
+    "description": "Приватный залив Ката Ной, тропический сад и одни из лучших отзывов на острове Пхукет.",
+    "amenities": ["Приватный пляж", "3 бассейна", "Spa", "Тайская кухня"],
+    "gradient": "linear-gradient(135deg,#0c1210,#9fae8f)",
+    "externalReviews": {
+      "tripadvisor": { "rating": 4.6, "count": 4130, "url": "https://www.tripadvisor.com/" },
+      "booking": { "rating": 9.0, "count": 3980, "url": "https://www.booking.com/" }
+    }
+  },
+  {
+    "id": "h5",
+    "countryId": "maldives",
+    "name": "Sun Siyam Olhuveli",
+    "stars": 5,
+    "priceFrom": 2600,
+    "board": "Полупансион",
+    "description": "Виллы над водой, домашний риф прямо у террасы, идеально для медового месяца.",
+    "amenities": ["Виллы на воде", "Домашний риф", "Spa на воде", "Дайвинг"],
+    "gradient": "linear-gradient(135deg,#0a1214,#8fabb0)",
+    "externalReviews": {
+      "tripadvisor": { "rating": 4.8, "count": 1890, "url": "https://www.tripadvisor.com/" },
+      "booking": { "rating": 9.4, "count": 1420, "url": "https://www.booking.com/" }
+    }
+  },
+  {
+    "id": "h6",
+    "countryId": "georgia",
+    "name": "Paragraph Batumi",
+    "stars": 4,
+    "priceFrom": 620,
+    "board": "Завтрак",
+    "description": "Дизайнерский отель в центре Батуми в двух шагах от набережной и старого города.",
+    "amenities": ["Крышный бассейн", "Спа", "Рестораны", "Прокат авто"],
+    "gradient": "linear-gradient(135deg,#150e0f,#b08a85)",
+    "externalReviews": {
+      "tripadvisor": { "rating": 4.5, "count": 980, "url": "https://www.tripadvisor.com/" },
+      "booking": { "rating": 8.9, "count": 1340, "url": "https://www.booking.com/" }
+    }
+  }
+]

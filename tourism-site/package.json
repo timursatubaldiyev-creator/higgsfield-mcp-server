@@ -1,0 +1,20 @@
+{
+  "name": "meridian-travel-site",
+  "version": "1.0.0",
+  "description": "Сайт туристического агентства «Меридиан»: каталог туров, заявки, отели, отзывы, партнёры, сезонность, горящие туры, скидки, бонусы и личный кабинет туриста",
+  "type": "module",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
