@@ -567,6 +567,135 @@ function wireTooltips() {
   document.addEventListener("click", () => document.querySelectorAll(".tip.tip-open").forEach((t) => t.classList.remove("tip-open")));
 }
 
+// ---------- iridescence background (vanilla WebGL analog of react-bits Iridescence) ----------
+// Reconstructed from general shader-art knowledge, not a byte-for-byte port —
+// reactbits.dev was unreachable to pull the original source. Tinted to the
+// site's gold/ink palette instead of the component's default white.
+function initIridescence() {
+  const canvas = document.getElementById("iridescenceBg");
+  if (!canvas) return;
+
+  const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+  if (!gl) {
+    canvas.style.display = "none";
+    return;
+  }
+
+  const vertexSrc = `
+    attribute vec2 aPosition;
+    varying vec2 vUv;
+    void main() {
+      vUv = aPosition * 0.5 + 0.5;
+      gl_Position = vec4(aPosition, 0.0, 1.0);
+    }
+  `;
+
+  const fragmentSrc = `
+    precision highp float;
+    varying vec2 vUv;
+    uniform float uTime;
+    uniform vec3 uColor;
+    uniform vec2 uResolution;
+    uniform float uAmplitude;
+    uniform vec2 uMouse;
+
+    void main() {
+      float mr = min(uResolution.x, uResolution.y);
+      vec2 uv = (vUv * uResolution - 0.5 * uResolution) / mr;
+      uv += (uMouse - 0.5) * uAmplitude;
+
+      float d = -uTime * 0.5;
+      float a = 0.0;
+      for (float i = 0.0; i < 8.0; ++i) {
+        a += cos(i - d - a * uv.x);
+        d += sin(uv.y * i + a);
+      }
+      d += uTime * 0.5;
+
+      // Same flowing iridescence field as the original, but collapsed to a
+      // single shimmer intensity so it tints uColor instead of rainbowing.
+      float shimmer = cos(uv.x * d + uv.y * a) * 0.5 + 0.5;
+      shimmer *= cos(a - d) * 0.35 + 0.65;
+      vec3 col = uColor * shimmer;
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+
+  function compile(type, src) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      gl.deleteShader(shader);
+      return null;
+    }
+    return shader;
+  }
+
+  const vs = compile(gl.VERTEX_SHADER, vertexSrc);
+  const fs = compile(gl.FRAGMENT_SHADER, fragmentSrc);
+  if (!vs || !fs) {
+    canvas.style.display = "none";
+    return;
+  }
+
+  const program = gl.createProgram();
+  gl.attachShader(program, vs);
+  gl.attachShader(program, fs);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    canvas.style.display = "none";
+    return;
+  }
+  gl.useProgram(program);
+
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const aPosition = gl.getAttribLocation(program, "aPosition");
+  gl.enableVertexAttribArray(aPosition);
+  gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
+
+  const uTime = gl.getUniformLocation(program, "uTime");
+  const uColor = gl.getUniformLocation(program, "uColor");
+  const uResolution = gl.getUniformLocation(program, "uResolution");
+  const uAmplitude = gl.getUniformLocation(program, "uAmplitude");
+  const uMouse = gl.getUniformLocation(program, "uMouse");
+
+  // gold accent (--gold: #cbb37c), amplitude/speed match the requested config
+  gl.uniform3f(uColor, 0.796, 0.702, 0.486);
+  gl.uniform1f(uAmplitude, 0.1);
+  gl.uniform2f(uMouse, 0.5, 0.5);
+  const SPEED = 1.0;
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const w = Math.floor(window.innerWidth * dpr);
+    const h = Math.floor(window.innerHeight * dpr);
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w;
+      canvas.height = h;
+      gl.viewport(0, 0, w, h);
+      gl.uniform2f(uResolution, w, h);
+    }
+  }
+  resize();
+  window.addEventListener("resize", resize, { passive: true });
+
+  if (REDUCE_MOTION) {
+    gl.uniform1f(uTime, 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    return;
+  }
+
+  const start = performance.now();
+  (function frame(now) {
+    gl.uniform1f(uTime, ((now - start) / 1000) * SPEED);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    requestAnimationFrame(frame);
+  })(start);
+}
+
 // ---------- white glow cursor (desktop mice only) ----------
 function initCursorGlow() {
   if (REDUCE_MOTION) return;
@@ -878,6 +1007,7 @@ function wireBurger() {
 }
 
 async function init() {
+  initIridescence();
   wireModals();
   wireForms();
   wireBurger();
