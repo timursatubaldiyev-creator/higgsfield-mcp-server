@@ -478,6 +478,20 @@ function refreshTilts() {
   enableTilt(".hotel-card");
 }
 
+// ---------- hero landmark art: flat gold silhouettes per destination,   ----------
+// ---------- inlined as SVG data URIs so the carousel needs no external images.
+function svgDataUri(svg) {
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+const LANDMARK_SVG = {
+  turkey: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240"><g fill="#cbb37c" opacity="0.85"><rect x="40" y="200" width="10" height="40"/><polygon points="45,150 35,200 55,200"/><circle cx="45" cy="145" r="5"/><rect x="350" y="200" width="10" height="40"/><polygon points="355,150 345,200 365,200"/><circle cx="355" cy="145" r="5"/><path d="M120 240 L120 190 Q120 120 200 120 Q280 120 280 190 L280 240 Z"/><path d="M160 120 Q200 70 240 120 Z"/><circle cx="200" cy="65" r="6"/></g></svg>`,
+  egypt: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240"><circle cx="200" cy="90" r="45" fill="#cbb37c" opacity="0.35"/><g fill="#cbb37c" opacity="0.9"><polygon points="90,220 160,110 230,220"/><polygon points="180,220 240,130 300,220"/><polygon points="260,220 300,155 340,220"/></g></svg>`,
+  uae: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240"><g fill="#cbb37c" opacity="0.88"><rect x="60" y="150" width="30" height="90"/><rect x="110" y="120" width="26" height="120"/><polygon points="185,240 195,60 205,240"/><rect x="240" y="140" width="28" height="100"/><rect x="290" y="165" width="24" height="75"/></g></svg>`,
+  thailand: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240"><g fill="#cbb37c" opacity="0.85"><path d="M40 240 Q60 120 90 240 Z"/><path d="M100 240 Q130 90 165 240 Z"/><path d="M280 240 Q310 130 345 240 Z"/></g><path d="M210 240 C205 190 215 150 230 110" stroke="#cbb37c" stroke-width="4" fill="none" opacity="0.9"/><g fill="#cbb37c" opacity="0.9"><path d="M230 110 Q260 100 270 130 Q245 120 230 110Z"/><path d="M230 110 Q200 95 185 118 Q212 118 230 110Z"/><path d="M230 110 Q255 85 250 60 Q225 90 230 110Z"/></g></svg>`,
+  maldives: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240"><g fill="#cbb37c" opacity="0.88"><rect x="150" y="140" width="100" height="45" rx="4"/><polygon points="150,140 200,110 250,140"/><rect x="160" y="185" width="6" height="45"/><rect x="235" y="185" width="6" height="45"/></g><path d="M90 145 C85 190 75 215 60 240" stroke="#cbb37c" stroke-width="4" fill="none" opacity="0.85"/><g fill="#cbb37c" opacity="0.9"><path d="M90 145 Q120 135 128 165 Q105 155 90 145Z"/><path d="M90 145 Q60 130 45 152 Q72 152 90 145Z"/><path d="M90 145 Q112 118 108 90 Q82 118 90 145Z"/></g></svg>`,
+  georgia: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240"><g fill="#cbb37c" opacity="0.8"><polygon points="20,240 90,110 160,240"/><polygon points="120,240 200,70 280,240"/><polygon points="240,240 310,130 380,240"/></g><g fill="#cbb37c" opacity="0.95"><rect x="185" y="185" width="30" height="35"/><polygon points="180,185 200,160 220,185"/><rect x="197" y="150" width="6" height="14"/></g></svg>`,
+};
+
 // ---------- hero tour carousel: drag/swipe, arrows, dots, autoplay ----------
 function initHeroCarousel(tours) {
   const container = document.getElementById("heroCarousel");
@@ -486,16 +500,18 @@ function initHeroCarousel(tours) {
   if (!container || !track || !tours.length) return;
 
   track.innerHTML = tours
-    .map(
-      (t) => `
-    <div class="hc-slide" style="background:${t.gradient}">
+    .map((t) => {
+      const landmark = LANDMARK_SVG[t.countryId];
+      const bg = landmark ? `url('${svgDataUri(landmark)}'), ${t.gradient}` : t.gradient;
+      return `
+    <div class="hc-slide" style="background-image:${bg}">
       <div class="hc-caption">
         <span class="hc-badge">${t.country}</span>
         <h4>${t.title}</h4>
         <p>${t.nights} ночей · от $${t.price}</p>
       </div>
-    </div>`
-    )
+    </div>`;
+    })
     .join("");
   dotsWrap.innerHTML = tours
     .map((_, i) => `<button class="hc-dot ${i === 0 ? "active" : ""}" data-i="${i}" aria-label="Слайд ${i + 1}" type="button"></button>`)
@@ -752,6 +768,12 @@ const GLOBE_PINS = [
   { countryId: "georgia", rx: 28, ry: 325, color: "#b08a85" },
 ];
 
+function goToCountryRequest(countryId) {
+  document.getElementById("modalCountry").value = countryId;
+  hideBonusWidget();
+  openModal("requestModal");
+}
+
 function renderGlobePins() {
   const pins = document.getElementById("globePins");
   const legend = document.getElementById("globeLegend");
@@ -759,11 +781,25 @@ function renderGlobePins() {
   const radius = 150;
   pins.innerHTML = GLOBE_PINS.map((p) => {
     const name = countryName(p.countryId);
-    return `<span class="globe-pin" title="${name}" style="color:${p.color}; transform:rotateY(${p.ry}deg) rotateX(${p.rx}deg) translateZ(${radius}px);"></span>`;
+    return `<span class="globe-pin" role="button" tabindex="0" data-country="${p.countryId}" title="${name} — оставить заявку" aria-label="${name} — оставить заявку" style="color:${p.color}; transform:rotateY(${p.ry}deg) rotateX(${p.rx}deg) translateZ(${radius}px);"></span>`;
   }).join("");
   legend.innerHTML = GLOBE_PINS.map(
-    (p) => `<span class="globe-legend-item"><span class="globe-legend-dot" style="color:${p.color}; background:${p.color};"></span>${countryName(p.countryId)}</span>`
+    (p) =>
+      `<button type="button" class="globe-legend-item" data-country="${p.countryId}"><span class="globe-legend-dot" style="color:${p.color}; background:${p.color};"></span>${countryName(p.countryId)}</button>`
   ).join("");
+
+  pins.querySelectorAll(".globe-pin").forEach((pin) => {
+    pin.addEventListener("click", () => goToCountryRequest(pin.dataset.country));
+    pin.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        goToCountryRequest(pin.dataset.country);
+      }
+    });
+  });
+  legend.querySelectorAll(".globe-legend-item").forEach((btn) => {
+    btn.addEventListener("click", () => goToCountryRequest(btn.dataset.country));
+  });
 }
 
 function initGlobe() {
@@ -1085,6 +1121,7 @@ async function init() {
       nights: t.nights,
       price: t.price,
       country: countryName(t.countryId),
+      countryId: t.countryId,
       gradient: countries.find((c) => c.id === t.countryId)?.gradient || "var(--ink)",
     }))
   );
