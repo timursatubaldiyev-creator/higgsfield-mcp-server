@@ -781,7 +781,7 @@ function renderGlobePins() {
   const radius = 150;
   pins.innerHTML = GLOBE_PINS.map((p) => {
     const name = countryName(p.countryId);
-    return `<span class="globe-pin" role="button" tabindex="0" data-country="${p.countryId}" title="${name} — оставить заявку" aria-label="${name} — оставить заявку" style="color:${p.color}; transform:rotateY(${p.ry}deg) rotateX(${p.rx}deg) translateZ(${radius}px);"></span>`;
+    return `<span class="globe-pin" role="button" tabindex="0" data-country="${p.countryId}" data-name="${name}" title="${name} — оставить заявку" aria-label="${name} — оставить заявку" style="color:${p.color}; transform:rotateY(${p.ry}deg) rotateX(${p.rx}deg) translateZ(${radius}px);"></span>`;
   }).join("");
   legend.innerHTML = GLOBE_PINS.map(
     (p) =>

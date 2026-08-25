@@ -507,8 +507,8 @@ textarea{ resize:vertical; }
   box-shadow:inset -18px -22px 55px rgba(0,0,0,.55), inset 14px 16px 40px rgba(203,179,124,.18), 0 0 70px -10px rgba(203,179,124,.25);
 }
 .globe-sphere::before{
-  content:""; position:absolute; inset:0; border-radius:50%; opacity:.55; mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cg fill='%23cbb37c'%3E%3Cpath d='M18 60 Q34 40 58 48 Q78 42 84 62 Q70 74 50 70 Q28 78 18 60Z'/%3E%3Cpath d='M96 30 Q120 20 138 34 Q150 50 132 60 Q112 56 100 44 Q92 38 96 30Z'/%3E%3Cpath d='M108 96 Q136 88 156 104 Q160 128 138 136 Q114 132 104 114 Q100 104 108 96Z'/%3E%3Cpath d='M34 118 Q56 110 70 126 Q68 148 46 150 Q26 142 24 126 Q26 120 34 118Z'/%3E%3Cpath d='M150 150 Q168 146 178 158 Q174 172 158 172 Q146 166 150 150Z'/%3E%3C/g%3E%3C/svg%3E");
+  content:""; position:absolute; inset:0; border-radius:50%; opacity:.62; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cg fill='%23cbb37c'%3E%3Cpath d='M60,35 L85,30 L110,40 L125,55 L135,75 L138,100 L130,125 L115,145 L100,158 L82,155 L68,140 L55,115 L45,85 L48,55 Z'/%3E%3Cpath d='M118,168 L138,172 L150,190 L155,215 L150,245 L140,270 L122,278 L108,265 L100,235 L98,200 L105,180 Z'/%3E%3Cpath d='M182,50 L200,45 L218,48 L228,58 L225,72 L210,80 L192,78 L178,65 Z'/%3E%3Cpath d='M200,92 L225,88 L245,98 L255,120 L258,150 L252,180 L242,208 L228,225 L212,222 L200,200 L195,165 L192,130 L195,108 Z'/%3E%3Cpath d='M232,58 L260,42 L300,35 L335,40 L360,52 L378,72 L380,98 L365,115 L345,108 L325,122 L305,115 L288,130 L272,118 L255,128 L240,105 L228,80 Z'/%3E%3Cpath d='M268,128 L285,132 L292,150 L286,172 L272,178 L262,160 L260,142 Z'/%3E%3Cpath d='M300,235 L325,228 L350,235 L360,250 L352,265 L328,270 L306,262 L296,248 Z'/%3E%3Ccircle cx='320' cy='148' r='6'/%3E%3Ccircle cx='335' cy='160' r='5'/%3E%3Ccircle cx='372' cy='88' r='5'/%3E%3Cellipse cx='262' cy='195' rx='5' ry='10'/%3E%3Ccircle cx='175' cy='58' r='4'/%3E%3C/g%3E%3C/svg%3E");
   background-size:cover;
 }
 .globe-ring{
@@ -521,9 +521,25 @@ textarea{ resize:vertical; }
   background:currentColor; border:2px solid rgba(255,253,248,.9);
   transition:transform .2s ease, box-shadow .2s ease;
 }
+.globe-pin::before{
+  content:""; position:absolute; inset:-4px; border-radius:50%; border:2px solid currentColor;
+  opacity:0; pointer-events:none; animation:globe-pin-pulse 2.4s ease-out infinite;
+}
+.globe-pin::after{
+  content:attr(data-name); position:absolute; bottom:130%; left:50%; transform:translateX(-50%);
+  background:rgba(13,12,10,.92); color:var(--cream); font-size:.72rem; font-weight:600;
+  padding:.3em .7em; border-radius:6px; white-space:nowrap; pointer-events:none;
+  opacity:0; transition:opacity .15s ease; box-shadow:0 6px 16px -6px rgba(0,0,0,.5);
+}
 .globe-pin:hover, .globe-pin:focus-visible{
-  box-shadow:0 0 16px 4px currentColor;
+  box-shadow:0 0 16px 4px currentColor; transform:scale(1.3);
   outline:none;
+}
+.globe-pin:hover::after, .globe-pin:focus-visible::after{ opacity:1; }
+@keyframes globe-pin-pulse{
+  0%{ transform:scale(.6); opacity:.7; }
+  70%{ transform:scale(1.9); opacity:0; }
+  100%{ opacity:0; }
 }
 .globe-legend-item{ cursor:pointer; background:none; border:none; font-family:inherit; padding:0; transition:color .2s ease; }
 .globe-legend-item:hover, .globe-legend-item:focus-visible{ color:var(--gold); }
@@ -560,6 +576,7 @@ textarea{ resize:vertical; }
   .hero-mesh{ transform:none !important; }
   .dest-card, .pass-card, .hotel-card{ transition:none; }
   .logo-mark{ animation:none; }
+  .globe-pin::before{ animation:none; display:none; }
 }
 
 @media (max-width: 640px){
