@@ -1,0 +1,10 @@
+[
+  { "id": "p1", "name": "Turkish Airlines", "kind": "Авиаперевозчик" },
+  { "id": "p2", "name": "Emirates", "kind": "Авиаперевозчик" },
+  { "id": "p3", "name": "TEZ TOUR", "kind": "Туроператор" },
+  { "id": "p4", "name": "Anex Tour", "kind": "Туроператор" },
+  { "id": "p5", "name": "Coral Travel", "kind": "Туроператор" },
+  { "id": "p6", "name": "AlfaStrakhovanie", "kind": "Страхование" },
+  { "id": "p7", "name": "Rixos Hotels", "kind": "Отельная сеть" },
+  { "id": "p8", "name": "Booking.com Partner", "kind": "Бронирование" }
+]
